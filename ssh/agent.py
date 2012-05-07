@@ -283,9 +283,17 @@ class AgentRequestHandler(object):
         self._conn = None
         self.__chanC = chanClient
         chanClient.request_forward_agent(self._forward_agent_handler)
+        self.__clientProxys = []
+
+    def __del__(self):
+        self.close()
+
+    def close(self):
+        for a in self.__clientProxys:
+            a.close()
 
     def _forward_agent_handler(self, chanRemote):
-        AgentClientProxy(chanRemote)
+        self.__clientProxys.append(AgentClientProxy(chanRemote))
 
 class Agent(AgentSSH):
     """
